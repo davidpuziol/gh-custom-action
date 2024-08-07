@@ -1,24 +1,35 @@
 name: 'Get And Cache Deps'
 description: 'Get dependencies via npm and cache them.'
-# Definindo as variáveis
 inputs:
   caching:
     description: 'Se vamos ou não fazer o cache'
     required: false
-    default: 'true' # valor padrão caso não for passado
+    default: 'true'
+outputs:
+  used-cache:
+    description: "Se cache foi usado"
+    value: ${{ steps.fill-outputs.outputs.used }}
 runs:
-  using: 'composite' # Ese é o tipo da action
+  using: 'composite'
   steps:
-    ## Nosso bloco de steps ##
     - name: Cache dependencies
       id: cache
-      if: inputs.caching == 'true' # Só irá faze ro cache se for true
+      if: ${{ inputs.caching == 'true' }}
       uses: actions/cache@v3
       with:
         path: node_modules
         key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+    
     - name: Install dependencies
-      if: steps.cache.outputs.cache-hit != 'true' || inputs.caching != 'true'
+      id: install
+      if: ${{ steps.cache.outputs.cache-hit != 'true' || inputs.caching != 'true' }}
       run: npm ci
-      shell: bash # Quando vamos usar um comando run precisamos definir shell
-    ###########################
+
+    - name: Set output if cache was used
+      id: fill-outputs
+      run: |
+        if [ "${{ steps.install.outcome }}" == "success" ]; then
+          echo "::set-output name=used::false"
+        else
+          echo "::set-output name=used::true"
+        fi

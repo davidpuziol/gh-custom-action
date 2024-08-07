@@ -13,6 +13,8 @@ jobs:
         uses: ./.github/actions/cache-deps
         with:
           caching: 'false'
+      - name: Output Info
+        run: echo "Cache used? {{ steps.cache-deps.outputs.used-cache}}"
       - name: Lint code
         run: npm run lint
   test:
@@ -22,6 +24,9 @@ jobs:
         uses: actions/checkout@v3
       - name: Cache and Install Deps
         uses: ./.github/actions/cache-deps
+        id: cached-deps
+      - name: Output Info
+        run: echo "Cache used? {{ steps.cache-deps.outputs.used-cache}}"
       - name: Test code
         id: run-tests
         run: npm run test
