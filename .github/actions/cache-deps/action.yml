@@ -23,10 +23,12 @@ runs:
     - name: Install dependencies
       id: install
       if: ${{ steps.cache.outputs.cache-hit != 'true' || inputs.caching != 'true' }}
+      shell: bash
       run: npm ci
 
     - name: Set output if cache was used
       id: fill-outputs
+      shell: bash
       run: |
         if [ "${{ steps.install.outcome }}" == "success" ]; then
           echo "::set-output name=used::false"
