@@ -31,7 +31,7 @@ runs:
       shell: bash
       run: |
         if [ "${{ steps.install.outcome }}" == "success" ]; then
-          echo "used-cache=false" >> $GITHUB_OUTPUT
+          echo "used=false" >> $GITHUB_OUTPUT
         else
-          echo "used-cache=true" >> $GITHUB_OUTPUT
+          echo "used=true" >> $GITHUB_OUTPUT
         fi
